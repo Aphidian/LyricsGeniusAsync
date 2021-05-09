@@ -2,8 +2,9 @@ import time
 import os
 from json.decoder import JSONDecodeError
 
-import requests
-from requests.exceptions import HTTPError, Timeout
+import aiohttp
+import asyncio
+
 
 
 class Sender(object):
@@ -22,7 +23,7 @@ class Sender(object):
         retries=0,
         public_api_constructor=False,
     ):
-        self._session = requests.Session()
+        self._session = aiohttp.ClientSession(loop=asyncio.get_event_loop())
         self._session.headers = {
             'application': 'LyricsGenius',
             'User-Agent': 'https://github.com/johnwmillr/LyricsGenius'
@@ -43,7 +44,7 @@ class Sender(object):
         self.sleep_time = sleep_time
         self.retries = retries
 
-    def _make_request(
+    async def _make_request(
         self,
         path,
         method='GET',
@@ -72,44 +73,33 @@ class Sender(object):
         while response is None and tries <= self.retries:
             tries += 1
             try:
-                response = self._session.request(method, uri,
+                response = await self._session.request(method, uri,
                                                  timeout=self.timeout,
                                                  params=params_,
                                                  headers=header,
                                                  **kwargs)
                 response.raise_for_status()
-            except Timeout as e:
+            except asyncio.TimeoutError as e:
                 error = "Request timed out:\n{e}".format(e=e)
                 if tries > self.retries:
-                    raise Timeout(error)
-            except HTTPError as e:
-                error = get_description(e)
-                if response.status_code < 500 or tries > self.retries:
-                    raise HTTPError(response.status_code, error)
+                    raise asyncio.TimeoutError(error)
+            except aiohttp.ClientConnectorError as e:
+              
+                if response.status < 500 or tries > self.retries:
+                    raise ClientConnectionError(response.status, e)
 
             # Enforce rate limiting
-            time.sleep(self.sleep_time)
+            await asyncio.sleep(self.sleep_time)
 
         if web:
             return response.text
-        elif response.status_code == 200:
-            res = response.json()
+        elif response.status == 200:
+            res = await response.json()
             return res.get("response", res)
-        elif response.status_code == 204:
+        elif response.status == 204:
             return 204
         else:
             raise AssertionError("Response status code was neither 200, nor 204! "
-                                 "It was {}".format(response.status_code))
+                                 "It was {}".format(response.status))
 
 
-def get_description(e):
-    error = str(e)
-    try:
-        res = e.response.json()
-    except JSONDecodeError:
-        res = {}
-    description = (res['meta']['message']
-                   if res.get('meta')
-                   else res.get('error_description'))
-    error += '\n{}'.format(description) if description else ''
-    return error
