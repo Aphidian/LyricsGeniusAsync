@@ -434,7 +434,7 @@ class Genius(API, PublicAPI):
 
         if (song_info['lyrics_state'] == 'complete'
                 and not song_info.get('instrumental')):
-            lyrics = self.lyrics(song_url=song_info['url'])
+            lyrics = await self.lyrics(song_url=song_info['url'])
         else:
             lyrics = ""
 
