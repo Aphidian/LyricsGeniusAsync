@@ -24,7 +24,7 @@ class Sender(object):
         public_api_constructor=False,
     ):
         self._session = aiohttp.ClientSession(loop=asyncio.get_event_loop())
-        self._session.headers = {
+        self.userheaders = {
             'application': 'LyricsGenius',
             'User-Agent': 'https://github.com/johnwmillr/LyricsGenius'
         }
