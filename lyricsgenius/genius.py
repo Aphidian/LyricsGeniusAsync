@@ -355,7 +355,7 @@ class Genius(API, PublicAPI):
 
         return Album(self, album_info, tracks)
 
-    def search_song(self, title=None, artist="", song_id=None,
+    async def search_song(self, title=None, artist="", song_id=None,
                     get_full_info=True):
         """Searches for a specific song and gets its lyrics.
 
@@ -398,7 +398,7 @@ class Genius(API, PublicAPI):
             result = self.song(song_id)['song']
         else:
             search_term = "{s} {a}".format(s=title, a=artist).strip()
-            search_response = self.search_all(search_term)
+            search_response = await self.search_all(search_term)
             result = self._get_item_from_search_response(search_response,
                                                          title,
                                                          type_="song",
