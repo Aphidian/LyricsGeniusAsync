@@ -92,7 +92,7 @@ class Genius(API, PublicAPI):
             self.excluded_terms = self.default_terms.copy()
             self.excluded_terms.extend(excluded_terms)
 
-    def lyrics(self, song_id=None, song_url=None, remove_section_headers=False):
+    async def lyrics(self, song_id=None, song_url=None, remove_section_headers=False):
         """Uses BeautifulSoup to scrape song info off of a Genius song URL
 
         You must supply either `song_id` or song_url`.
@@ -128,8 +128,9 @@ class Genius(API, PublicAPI):
             path = self.song(song_id)['song']['path'][1:]
 
         # Scrape the song lyrics from the HTML
+        req = await self._make_request(path, web=True)
         html = BeautifulSoup(
-            self._make_request(path, web=True).replace('<br/>', '\n'),
+            req.replace('<br/>', '\n'),
             "html.parser"
         )
 
