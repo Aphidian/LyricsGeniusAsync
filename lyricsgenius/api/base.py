@@ -76,8 +76,7 @@ class Sender(object):
                 response = await self._session.request(method=method, url=uri,
                                                  timeout=self.timeout,
                                                  params=params_,
-                                                 headers=header,
-                                                 **kwargs)
+                                                 headers=header)
                 response.raise_for_status()
             except asyncio.TimeoutError as e:
                 error = "Request timed out:\n{e}".format(e=e)
