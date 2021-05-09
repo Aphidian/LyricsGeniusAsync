@@ -73,7 +73,7 @@ class Sender(object):
         while response is None and tries <= self.retries:
             tries += 1
             try:
-                response = await self._session.request(method, uri,
+                response = await self._session.request(method=method, url=uri,
                                                  timeout=self.timeout,
                                                  params=params_,
                                                  headers=header,
