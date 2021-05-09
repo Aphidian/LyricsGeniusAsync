@@ -89,7 +89,7 @@ class Sender(object):
             await asyncio.sleep(self.sleep_time)
 
         if web:
-            return response.text
+            return await response.text()
         elif response.status == 200:
             res = await response.json()
             return res.get("response", res)
