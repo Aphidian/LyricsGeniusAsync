@@ -394,7 +394,7 @@ class API(Sender):
                   'text_format': text_format or self.response_format}
         return self._make_request(endpoint, params_=params)
 
-    def search_songs(self, search_term, per_page=None, page=None):
+    async def search_songs(self, search_term, per_page=None, page=None):
         """Searches songs hosted on Genius.
 
         Args:
@@ -411,7 +411,7 @@ class API(Sender):
         params = {'q': search_term,
                   'per_page': per_page,
                   'page': page}
-        return self._make_request(endpoint, params_=params)
+        return await self._make_request(endpoint, params_=params)
 
     def song(self, song_id, text_format=None):
         """Gets data for a specific song.
