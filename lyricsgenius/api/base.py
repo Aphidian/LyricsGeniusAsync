@@ -24,10 +24,7 @@ class Sender(object):
         public_api_constructor=False,
     ):
         self._session = aiohttp.ClientSession(loop=asyncio.get_event_loop())
-        self.userheaders = {
-            'application': 'LyricsGenius',
-            'User-Agent': 'https://github.com/johnwmillr/LyricsGenius'
-        }
+ 
         if access_token is None:
             access_token = os.environ.get('GENIUS_ACCESS_TOKEN')
 
@@ -37,7 +34,8 @@ class Sender(object):
             if not access_token or not isinstance(access_token, str):
                 raise TypeError('Invalid token')
             self.access_token = 'Bearer ' + access_token
-            self.authorization_header = {'authorization': self.access_token}
+            self.authorization_header = {'authorization': self.access_token, 'application': 'LyricsGenius',
+            'User-Agent': 'https://github.com/johnwmillr/LyricsGenius'}
 
         self.response_format = response_format.lower()
         self.timeout = timeout
