@@ -184,7 +184,7 @@ class SearchMethods(object):
         endpoint = 'video'
         return self.search(search_term, per_page, page, endpoint)
 
-    def search_all(self, search_term, per_page=None, page=None):
+    async def search_all(self, search_term, per_page=None, page=None):
         """Searches all types.
 
         Including: albums, articles, lyrics, songs, users and
